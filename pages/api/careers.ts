@@ -9,22 +9,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { resumeText, aspirations } = req.body as {
+  const { resumeText } = req.body as {
     resumeText?: string;
-    aspirations?: Record<string, string>;
   };
 
   if (!resumeText) {
     return res.status(400).json({ error: 'Missing resumeText' });
   }
 
-  const systemPrompt = `Tu es un expert en orientation de carrière. Tu parles uniquement en français.\nTu reçois le texte d'un CV et quelques aspirations.\nRetourne un objet JSON avec un tableau \"suggestions\" (max 5).\nChaque suggestion doit contenir :\n- title (intitulé du métier)\n- description (brève description du métier en français)\n- fitScore (0-100)\n- strengths (tableau de 3 à 5 points forts du candidat par rapport au rôle)\n- weaknesses (tableau de 2 à 4 faiblesses ou écarts)\n- skillsToAcquire (tableau de compétences clés à acquérir pour progresser vers ce rôle).`;
+  const systemPrompt = `Tu es un expert en recrutement et en optimisation de CV, avec une connaissance approfondie des attentes des entreprises technologiques de premier plan (type FAANG). Ton rôle est d'analyser un CV fourni, d'identifier ses points faibles ou les aspects qui pourraient être améliorés pour attirer l'attention des recruteurs de ces entreprises, et de proposer des suggestions concrètes pour y remédier. Tu dois fournir la réponse au format JSON, uniquement en français.\n\nLa réponse JSON doit contenir les champs suivants :\n- weaknesses (tableau d'objets, chaque objet représentant un point faible)\n- suggestions (tableau d'objets, chaque objet représentant une suggestion d'amélioration)\n\nChaque objet dans le tableau 'weaknesses' doit contenir :\n- description (description du point faible identifié)\n\nChaque objet dans le tableau 'suggestions' doit contenir :\n- description (description de la suggestion pour améliorer le CV)\n- correspondingWeakness (optionnel, pour lier une suggestion à un point faible spécifique, si pertinent)`;
 
-  const userPrompt = `CV:\n${resumeText}\n---\nAspirations:\n${JSON.stringify(
-    aspirations,
-    null,
-    2
-  )}`;
+  const userPrompt = `Analyse ce CV et fournis une réponse JSON identifiant ses faiblesses et proposant des suggestions pour l'améliorer afin qu'il soit attrayant pour les recruteurs d'entreprises type FAANG :\n\nCV:\n${resumeText}`;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -42,7 +37,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     const json = JSON.parse(content);
 
-    return res.status(200).json(json);
+    // Adjusting the response structure to match the new prompt
+    const responseData = {
+      weaknesses: json.weaknesses || [],
+      suggestions: json.suggestions || [],
+    };
+
+    return res.status(200).json(responseData);
   } catch (err: any) {
     console.error(err);
     return res.status(500).json({ error: 'Failed to generate' });
