@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing resumeText' });
   }
 
-  const systemPrompt = `Tu es un expert en orientation de carrière. Tu reçois le texte d'un CV et quelques aspirations. Tu dois retourner un JSON avec un tableau suggestions. Chaque élément doit contenir: title, description, fitScore (0-100) et adjacencyScore (0-100). Max 5 suggestions.`;
+  const systemPrompt = `Tu es un expert en orientation de carrière. Tu parles uniquement en français.\nTu reçois le texte d'un CV et quelques aspirations.\nRetourne un objet JSON avec un tableau \"suggestions\" (max 5).\nChaque suggestion doit contenir :\n- title (intitulé du métier)\n- description (brève description du métier en français)\n- fitScore (0-100)\n- strengths (tableau de 3 à 5 points forts du candidat par rapport au rôle)\n- weaknesses (tableau de 2 à 4 faiblesses ou écarts)\n- skillsToAcquire (tableau de compétences clés à acquérir pour progresser vers ce rôle).`;
 
   const userPrompt = `CV:\n${resumeText}\n---\nAspirations:\n${JSON.stringify(
     aspirations,

@@ -5,7 +5,9 @@ interface Suggestion {
   title: string;
   description: string;
   fitScore: number;
-  adjacencyScore: number;
+  strengths: string[];
+  weaknesses: string[];
+  skillsToAcquire: string[];
 }
 
 const pdfJsVersion = '3.11.174';
@@ -21,6 +23,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [manualEntry, setManualEntry] = useState('');
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -140,15 +143,46 @@ export default function Home() {
           <h2>Étape 3 : Résultats</h2>
           {loading && <p>⏳ Génération...</p>}
           {!loading && suggestions.length > 0 &&
-            suggestions.map((s, idx) => (
-              <div key={idx} style={{ border: '1px solid #ccc', margin: '12px 0', padding: 12 }}>
-                <h3>
-                  {s.title} <span style={{ fontSize: 14 }}>(fit {s.fitScore}%)</span>
-                </h3>
-                <ProgressBar value={s.fitScore} />
-                <p>{s.description}</p>
-              </div>
-            ))}
+            suggestions.map((s, idx) => {
+              const isOpen = expanded === idx;
+              return (
+                <div key={idx} style={{ border: '1px solid #ccc', margin: '12px 0', padding: 12 }}>
+                  <h3
+                    style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
+                    onClick={() => setExpanded(isOpen ? null : idx)}
+                  >
+                    <span>
+                      {s.title} <span style={{ fontSize: 14 }}>(fit {s.fitScore}%)</span>
+                    </span>
+                    <span>{isOpen ? '▲' : '▼'}</span>
+                  </h3>
+                  <ProgressBar value={s.fitScore} />
+                  <p>{s.description}</p>
+                  {isOpen && (
+                    <div style={{ marginTop: 8 }}>
+                      <strong>Forces :</strong>
+                      <ul>
+                        {s.strengths.map((st, i) => (
+                          <li key={i}>{st}</li>
+                        ))}
+                      </ul>
+                      <strong>Faiblesses :</strong>
+                      <ul>
+                        {s.weaknesses.map((w, i) => (
+                          <li key={i}>{w}</li>
+                        ))}
+                      </ul>
+                      <strong>Compétences à acquérir :</strong>
+                      <ul>
+                        {s.skillsToAcquire.map((sk, i) => (
+                          <li key={i}>{sk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </section>
       )}
     </main>
