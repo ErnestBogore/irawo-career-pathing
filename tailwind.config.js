@@ -10,6 +10,9 @@ export default {
         primary: '#FFD100',
         dark: '#000000',
       },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+      },
     },
   },
   plugins: [],

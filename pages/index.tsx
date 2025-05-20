@@ -82,10 +82,10 @@ export default function Home() {
   };
 
   const ProgressBar = ({ value }: { value: number }) => (
-    <div className="w-full h-3 bg-gray-200 rounded">
+    <div className="w-full h-3 bg-gray-300 rounded">
       <div
-        className="h-3 rounded"
-        style={{ width: `${value}%`, background: 'linear-gradient(90deg,#FFD100,#FFD100)' }}
+        className="h-3 rounded bg-primary"
+        style={{ width: `${value}%` }}
       />
     </div>
   );
@@ -99,8 +99,8 @@ export default function Home() {
         <section className="card">
           <h2>Étape 1 : Provide ton CV</h2>
           <p>Upload un PDF/texte ou colle directement ton CV :</p>
-          <input type="file" accept=".txt,.pdf" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
-          <textarea value={manualEntry} onChange={e=>setManualEntry(e.target.value)} placeholder="Ou colle ton CV ici..." rows={8} className="border p-2 rounded w-full mt-4" />
+          <input type="file" accept=".txt,.pdf" className="file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-primary file:text-dark file:font-semibold file:rounded cursor-pointer" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
+          <textarea value={manualEntry} onChange={e=>setManualEntry(e.target.value)} placeholder="Ou colle ton CV ici..." rows={8} className="mt-4" />
           <button
             disabled={!resumeText && !manualEntry}
             className="mt-4 px-4 py-2 bg-primary text-dark font-semibold rounded disabled:opacity-40"
@@ -119,7 +119,7 @@ export default function Home() {
           <label>
             Rôle de rêve :
             <input
-              className="border p-2 rounded w-full"
+              className="w-full"
               value={aspirations.dreamRole}
               onChange={(e) => setAspirations({ ...aspirations, dreamRole: e.target.value })}
             />
@@ -128,7 +128,7 @@ export default function Home() {
           <label>
             Tâches que tu aimes :
             <input
-              className="border p-2 rounded w-full"
+              className="w-full"
               value={aspirations.enjoyTasks}
               onChange={(e) => setAspirations({ ...aspirations, enjoyTasks: e.target.value })}
             />
@@ -137,7 +137,7 @@ export default function Home() {
           <label>
             Environnement préféré :
             <input
-              className="border p-2 rounded w-full"
+              className="w-full"
               value={aspirations.preferredEnvironment}
               onChange={(e) =>
                 setAspirations({ ...aspirations, preferredEnvironment: e.target.value })
@@ -161,7 +161,10 @@ export default function Home() {
             suggestions.map((s, idx) => {
               const isOpen = expanded === idx;
               return (
-                <div key={idx} style={{ border: '1px solid #ccc', margin: '12px 0', padding: 12 }}>
+                <div
+                  key={idx}
+                  className="border border-gray-200 rounded-xl p-5 mb-4 bg-white hover:shadow-lg transition cursor-pointer"
+                >
                   <h3
                     style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
                     onClick={() => setExpanded(isOpen ? null : idx)}
