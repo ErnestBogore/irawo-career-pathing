@@ -13,6 +13,7 @@ interface Suggestion {
 interface AnalysisResult {
   weaknesses: Weakness[];
   suggestions: Suggestion[];
+  rewritten_cv?: string; // Added rewritten_cv field
 }
 
 const pdfJsVersion = '3.11.174';
@@ -149,10 +150,10 @@ export default function Home() {
           <section className="card">
             <h2 className="text-2xl font-semibold mb-6">Résultats de l'analyse</h2>
             {loading && <p className="text-center text-primary">⏳ Analyse en cours...</p>}
-            {!loading && analysisResult && analysisResult.weaknesses.length === 0 && analysisResult.suggestions.length === 0 && (
+            {!loading && analysisResult && analysisResult.weaknesses.length === 0 && analysisResult.suggestions.length === 0 && !analysisResult.rewritten_cv && (
               <p className="text-center text-gray-600">Aucune faiblesse ou suggestion trouvée. Votre CV semble déjà très optimisé !</p>
             )}
-            {!loading && analysisResult && (analysisResult.weaknesses.length > 0 || analysisResult.suggestions.length > 0) && (
+            {!loading && analysisResult && (analysisResult.weaknesses.length > 0 || analysisResult.suggestions.length > 0 || analysisResult.rewritten_cv) && (
               <div>
                 {analysisResult.weaknesses.length > 0 && (
                   <div className="mb-6">
@@ -166,13 +167,20 @@ export default function Home() {
                 )}
 
                 {analysisResult.suggestions.length > 0 && (
-                  <div>
+                  <div className="mb-6">
                     <h3 className="text-xl font-semibold mb-4">Suggestions d'amélioration :</h3>
                     <ul className="list-disc list-inside ml-4 space-y-2">
                       {analysisResult.suggestions.map((item, index) => (
                         <li key={index} className="text-gray-700">{item.description}</li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {analysisResult.rewritten_cv && (
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold mb-4">CV réécrit :</h3>
+                    <pre className="bg-gray-100 p-4 rounded-md whitespace-pre-wrap text-gray-700">{analysisResult.rewritten_cv}</pre>
                   </div>
                 )}
               </div>

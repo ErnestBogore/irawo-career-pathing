@@ -17,9 +17,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing resumeText' });
   }
 
-  const systemPrompt = `Tu es un expert en recrutement et en optimisation de CV, avec une connaissance approfondie des attentes des entreprises technologiques de premier plan (type FAANG). Ton rôle est d'analyser un CV fourni, d'identifier ses points faibles ou les aspects qui pourraient être améliorés pour attirer l'attention des recruteurs de ces entreprises, et de proposer des suggestions concrètes pour y remédier. Tu dois fournir la réponse au format JSON, uniquement en français.\n\nLa réponse JSON doit contenir les champs suivants :\n- weaknesses (tableau d'objets, chaque objet représentant un point faible)\n- suggestions (tableau d'objets, chaque objet représentant une suggestion d'amélioration)\n\nChaque objet dans le tableau 'weaknesses' doit contenir :\n- description (description du point faible identifié)\n\nChaque objet dans le tableau 'suggestions' doit contenir :\n- description (description de la suggestion pour améliorer le CV)\n- correspondingWeakness (optionnel, pour lier une suggestion à un point faible spécifique, si pertinent)`;
+  const systemPrompt = `Tu es un recruteur faang, tu connais le type de cv qui marche et que les ATS veulent. Analyze le cv et decortique le et suggere des modifications pour ameliorer les faiblesses. quand tu finis, re-ecris le cv pour l'utilisateur. Tu dois fournir la réponse au format JSON, uniquement en français.\n\nLa réponse JSON doit contenir les champs suivants :\n- weaknesses (tableau d'objets, chaque objet représentant un point faible détaillé)\n- suggestions (tableau d'objets, chaque objet représentant une suggestion d'amélioration très concrète et actionable)\n- rewritten_cv (une chaîne de caractères contenant le CV réécrit et optimisé)`;
 
-  const userPrompt = `Analyse ce CV et fournis une réponse JSON identifiant ses faiblesses et proposant des suggestions pour l'améliorer afin qu'il soit attrayant pour les recruteurs d'entreprises type FAANG :\n\nCV:\n${resumeText}`;
+  const userPrompt = `CV:\n${resumeText}`; // Simplified user prompt
 
   try {
     const completion = await openai.chat.completions.create({
@@ -41,6 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const responseData = {
       weaknesses: json.weaknesses || [],
       suggestions: json.suggestions || [],
+      rewritten_cv: json.rewritten_cv || '', // Include rewritten_cv in the response
     };
 
     return res.status(200).json(responseData);
