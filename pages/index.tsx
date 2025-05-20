@@ -82,28 +82,35 @@ export default function Home() {
   };
 
   const ProgressBar = ({ value }: { value: number }) => (
-    <div style={{ background: '#eee', borderRadius: 6, width: '100%' }}>
+    <div className="w-full h-3 bg-gray-200 rounded">
       <div
-        style={{
-          width: `${value}%`,
-          background: 'linear-gradient(90deg,#00c6ff,#0072ff)',
-          padding: '4px 0',
-          borderRadius: 6,
-        }}
+        className="h-3 rounded"
+        style={{ width: `${value}%`, background: 'linear-gradient(90deg,#FFD100,#FFD100)' }}
       />
     </div>
   );
 
   return (
-    <main style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'sans-serif' }}>
-      <h1 style={{ textAlign: 'center' }}>🎮 Career Quest</h1>
+    <main className="max-w-2xl mx-auto p-4">
+      <h1 className="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+        <span role="img" aria-label="gamepad">🎮</span> <span className="text-primary">Irawo Career Pathing</span>
+      </h1>
       {step === 1 && (
         <section className="card">
           <h2>Étape 1 : Provide ton CV</h2>
           <p>Upload un PDF/texte ou colle directement ton CV :</p>
           <input type="file" accept=".txt,.pdf" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
-          <textarea value={manualEntry} onChange={e=>setManualEntry(e.target.value)} placeholder="Ou colle ton CV ici..." rows={8} />
-          <button disabled={!resumeText && !manualEntry} onClick={()=>{ if (!resumeText) setResumeText(manualEntry); handleNext(); }}>Suivant</button>
+          <textarea value={manualEntry} onChange={e=>setManualEntry(e.target.value)} placeholder="Ou colle ton CV ici..." rows={8} className="border p-2 rounded w-full mt-4" />
+          <button
+            disabled={!resumeText && !manualEntry}
+            className="mt-4 px-4 py-2 bg-primary text-dark font-semibold rounded disabled:opacity-40"
+            onClick={() => {
+              if (!resumeText) setResumeText(manualEntry);
+              handleNext();
+            }}
+          >
+            Suivant
+          </button>
         </section>
       )}
       {step === 2 && (
@@ -112,6 +119,7 @@ export default function Home() {
           <label>
             Rôle de rêve :
             <input
+              className="border p-2 rounded w-full"
               value={aspirations.dreamRole}
               onChange={(e) => setAspirations({ ...aspirations, dreamRole: e.target.value })}
             />
@@ -120,6 +128,7 @@ export default function Home() {
           <label>
             Tâches que tu aimes :
             <input
+              className="border p-2 rounded w-full"
               value={aspirations.enjoyTasks}
               onChange={(e) => setAspirations({ ...aspirations, enjoyTasks: e.target.value })}
             />
@@ -128,6 +137,7 @@ export default function Home() {
           <label>
             Environnement préféré :
             <input
+              className="border p-2 rounded w-full"
               value={aspirations.preferredEnvironment}
               onChange={(e) =>
                 setAspirations({ ...aspirations, preferredEnvironment: e.target.value })
@@ -135,7 +145,12 @@ export default function Home() {
             />
           </label>
           <br />
-          <button onClick={handleNext}>Explorer mes carrières</button>
+          <button
+            className="mt-4 px-4 py-2 bg-primary text-dark font-semibold rounded"
+            onClick={handleNext}
+          >
+            Explorer mes carrières
+          </button>
         </section>
       )}
       {step === 3 && (
