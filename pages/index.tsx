@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore: no types for pdfjs-dist
 
 interface Suggestion {
@@ -7,6 +7,8 @@ interface Suggestion {
   fitScore: number;
   adjacencyScore: number;
 }
+
+const pdfJsVersion = '3.11.174';
 
 export default function Home() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -18,6 +20,19 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [manualEntry, setManualEntry] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfJsVersion}/pdf.worker.min.js`;
+      } catch {
+        // ignore
+      }
+    })();
+  }, []);
+
   const handleFileUpload = async (file: File) => {
     if (file.type === 'text/plain') {
       const text = await file.text();
@@ -80,14 +95,12 @@ export default function Home() {
     <main style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'sans-serif' }}>
       <h1 style={{ textAlign: 'center' }}>🎮 Career Quest</h1>
       {step === 1 && (
-        <section>
-          <h2>Étape 1 : Télécharge ton CV</h2>
-          <input
-            type="file"
-            accept=".txt, .pdf"
-            onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
-          />
-          {resumeText && <button onClick={handleNext}>Suivant</button>}
+        <section className="card">
+          <h2>Étape 1 : Provide ton CV</h2>
+          <p>Upload un PDF/texte ou colle directement ton CV :</p>
+          <input type="file" accept=".txt,.pdf" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
+          <textarea value={manualEntry} onChange={e=>setManualEntry(e.target.value)} placeholder="Ou colle ton CV ici..." rows={8} />
+          <button disabled={!resumeText && !manualEntry} onClick={()=>{ if (!resumeText) setResumeText(manualEntry); handleNext(); }}>Suivant</button>
         </section>
       )}
       {step === 2 && (
