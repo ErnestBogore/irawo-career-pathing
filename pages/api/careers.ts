@@ -36,7 +36,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       response_format: { type: 'json_object' },
     });
 
-    const json = JSON.parse(completion.choices[0].message.content);
+    const content = completion.choices[0].message.content;
+    if (!content) {
+      throw new Error('OpenAI response empty');
+    }
+    const json = JSON.parse(content);
 
     return res.status(200).json(json);
   } catch (err: any) {
